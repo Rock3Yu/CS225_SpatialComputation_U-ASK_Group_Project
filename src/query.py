@@ -2,11 +2,10 @@ from read_data import parse_files
 from point import Point
 import random
 
-NUM_QUERY = 200
-
 
 class Query:
-    def __init__(self, path='../data/data_10'):
+    def __init__(self, num_query, path='../data/data_10'):
+        self.num_query = num_query
         raw_data_points = parse_files(path)
         self.points = []
         self.positions = []
@@ -85,9 +84,9 @@ class Query:
         ]
         return queries
 
-    def get_queries_by_num_keys(self, num_pos=1, num_neg=1, num_query=NUM_QUERY):
+    def get_queries_by_num_keys(self, num_pos=1, num_neg=1):
         queries = []
-        for i in range(num_query):
+        for i in range(self.num_query):
             position_tmp = random.choice(self.positions)
             pos_keys_tmp = random.sample(self.keywords, num_pos)
             neg_keys_tmp = random.sample(self.keywords, num_neg)

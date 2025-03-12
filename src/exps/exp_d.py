@@ -12,5 +12,5 @@ X_MIN, X_MAX = -180, 180
 Y_MIN, Y_MAX = -90, 90
 
 
-def exp_d():
-    pass
+def exp_d(path, query_num):
+    raise NotImplementedError

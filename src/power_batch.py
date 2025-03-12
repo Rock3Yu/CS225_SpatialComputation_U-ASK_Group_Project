@@ -3,22 +3,60 @@ from geopy.distance import geodesic
 import copy
 
 
+# def group_queries_by_proximity(q, radius_miles=100):
+#     groups = []
+#     queries = copy.deepcopy(q)
+#     while queries:
+#         first_query = queries.pop(0)
+#         current_group = [first_query]
+#         current_group_coords = first_query[0]
+
+#         for other_query in queries[:]:
+#             other_query_coords = other_query[0]
+#             distance = geodesic(current_group_coords, other_query_coords).miles
+#             if distance <= radius_miles:
+#                 current_group.append(other_query)
+#                 queries.remove(other_query)
+
+#         groups.append(current_group)
+#     return groups
+
+def hash_coordinates(lat, lon, grid_size_miles=100):
+    return (round(lat / grid_size_miles), round(lon / grid_size_miles))
+
+
 def group_queries_by_proximity(q, radius_miles=100):
-    groups = []
     queries = copy.deepcopy(q)
-    while queries:
-        first_query = queries.pop(0)
-        current_group = [first_query]
-        current_group_coords = first_query[0]
+    grid = defaultdict(list)
 
-        for other_query in queries[:]:
-            other_query_coords = other_query[0]
-            distance = geodesic(current_group_coords, other_query_coords).miles
-            if distance <= radius_miles:
-                current_group.append(other_query)
-                queries.remove(other_query)
+    # Step 1: Assign queries to grid cells
+    for query in queries:
+        cell = hash_coordinates(*query[0], radius_miles)
+        grid[cell].append(query)
 
+    # Step 2: Group queries using only nearby cells
+    visited = set()
+    groups = []
+    for cell, cell_queries in grid.items():
+        if cell in visited:
+            continue
+        visited.add(cell)
+        current_group = []
+        queue = cell_queries[:]
+        while queue:
+            first_query = queue.pop(0)
+            current_group.append(first_query)
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    neighbor_cell = (cell[0] + dx, cell[1] + dy)
+                    if neighbor_cell in grid:
+                        for neighbor_query in grid[neighbor_cell]:
+                            distance = geodesic(first_query[0], neighbor_query[0]).miles
+                            if distance <= radius_miles and neighbor_query not in current_group:
+                                queue.append(neighbor_query)
+                                grid[neighbor_cell].remove(neighbor_query)
         groups.append(current_group)
+
     return groups
 
 

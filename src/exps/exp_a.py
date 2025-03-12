@@ -5,16 +5,16 @@ from quadTreeNode import QuadTreeNode
 from invertedIndex import InvertedIndex
 from power import POWER
 from power_batch import POWER_batch, group_queries_by_proximity
-from query import Query, NUM_QUERY
+from query import Query
 from read_data import parse_files
 
 X_MIN, X_MAX = -180, 180
 Y_MIN, Y_MAX = -90, 90
 
 
-def exp_a():
+def exp_a(path, query_num):
     print("Running exp_a() function...")
-    folder_path = '../data/data_2'
+    folder_path = path
     data_points = parse_files(folder_path)
     print(f"Total number of data points: {len(data_points)}")
 
@@ -29,7 +29,7 @@ def exp_a():
     print("Quadtree and Inverted Index initialized successfully!")
 
     # Begin the experiment
-    q = Query(path=folder_path)
+    q = Query(query_num, path=folder_path)
     line_POWER, line_POWER_batch = [], []
     x_labels = [i+1 for i in range(5)]
     x_name = "Number of positive words |q.pos|"
@@ -45,7 +45,7 @@ def exp_a():
         res = []
         for query in queries:
             res += [POWER(quadtree, inverted_index, *query, k=5)]
-        original_latency = (time.time() - start) / NUM_QUERY * 100
+        original_latency = (time.time() - start) / query_num * 100
         # print(f"Original POWER took {original_latency} seconds")
 
         # Run batch POWER
@@ -54,7 +54,7 @@ def exp_a():
         res = []
         for group in queries_groups_20:
             res += POWER_batch(quadtree, inverted_index, group, k=5)
-        batched_latency = (time.time() - start) / NUM_QUERY * 100
+        batched_latency = (time.time() - start) / query_num * 100
         # print(f"Batched POWER took {batched_latency} seconds")
 
         line_POWER.append(original_latency)

@@ -8,6 +8,8 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 
+\usepackage{listings}
+
 \begin{document}
 
 \title{Final Project Report}
@@ -35,10 +37,10 @@ The paper of cutting-edge Spatial-keyword querying process is a 2022 published p
 
 \begin{enumerate}
     \item Propose two novel kNN spatial-keyword query problems
-    \begin{itemize}
-        \item TKQN: Top-k kNN Query with Negative keyword predicates (we choose this)
-        \item BKQN: Boolean kNN Query with negative keyword predicates
-    \end{itemize}
+          \begin{itemize}
+              \item TKQN: Top-k kNN Query with Negative keyword predicates (we choose this)
+              \item BKQN: Boolean kNN Query with negative keyword predicates
+          \end{itemize}
     \item Introduce U-ASK: a unified architecture for spatial-keyword query with negative keyword predictions
     \item Introduce POWER: a query processing algorithm handling TKQN and BKQN queries
     \item Present experimental evaluation on real datasets
@@ -60,12 +62,12 @@ Moreover, TEQ indexing is a hybrid, memory-resident index for TKQN queries which
     \item $n.ltp$: a location table pointer to a hash file on disk
     \item $n.neigh$: a list of spatial neighboring cells
     \item $n.iti$: an inverted textual index (hashtable) mapping keyword $w$ to the tuple:
-    \begin{enumerate}
-        \item $w.size$: number of objects containing the keyword $w$
-        \item $w.max$: maximum weight of $w$ in the cell
-        \item $w.listPtr$: pointer to the sorted inverted list file
-        \item $w.setPtr$: pointer to the sorted inverted set file (faster boolean filtering)
-    \end{enumerate}
+          \begin{enumerate}
+              \item $w.size$: number of objects containing the keyword $w$
+              \item $w.max$: maximum weight of $w$ in the cell
+              \item $w.listPtr$: pointer to the sorted inverted list file
+              \item $w.setPtr$: pointer to the sorted inverted set file (faster boolean filtering)
+          \end{enumerate}
     \item $n.oti$: an object textual index (hashtable) mapping object IDs to full text
 \end{enumerate}
 
@@ -105,13 +107,39 @@ The figures of above experiments’ results can be found in the “Figure 5: TKQ
 
 \section{Code Replication}
 
+In our code replication process, we choose Python as programming language and manage with multi files to decompose the complexity of the project. The python source files are stored in directory $./src$ and the structure is as follows:
 
+\begin{lstlisting}
+    ./src
+    ├── exps
+    │   ├── exp_a.py
+    │   ├── exp_b.py
+    │   ├── exp_c.py
+    │   ├── exp_d.py  // deprecated, no lambda for the POWER algorithm
+    │   ├── exp_e.py
+    │   └── exp_f.py
+    ├── invertedIndex.py
+    ├── main.py
+    ├── plots.py
+    ├── point.py
+    ├── power.py
+    ├── power_batch.py
+    ├── quadTreeNode.py
+    ├── query.py
+    └── read_data.py
+\end{lstlisting}
 
+The main entry of the project is $main.py$, which contains the main function to run the experiments. The $read\_data.py$, $point.py$, $quadTreeNode.py$, $invertedIndex.py$, $query.py$, $power.py$, and $power\_batch.py$ are the core modules of the project. The implementation logic are follow the paper closely. Note that the $power_batch.py$ is used to run the experiments in batch mode, which will first gether the queries with the same parameters into a group and then run the POWER algorithm for each group.
 
+The $plots.py$ is used to generate the plots for the experiments. The $exps$ directory contains the experiments mentioned in the paper subsection 6.3. The python files in the $exps$ directory will be called by the $main.py$ to run the experiments.
 
+Instruction to run the code:
 
-
-
+\begin{lstlisting}
+    $ python main.py --exp=<exp_name> --size=<dataset_size>
+    $ # exp_name: a, b, c, d, e, f (default a)
+    $ # dataset_size: 2, 4, 6, 8, 10 (default 4)
+\end{lstlisting}
 
 \section{Experiment Results}
 
@@ -142,20 +170,20 @@ The contribution of each team member is as follows:
 
 \begin{itemize}
 \item Chou, Kelvin
-    \begin{itemize}
-        \item Paper reading
-    \end{itemize}
+\begin{itemize}
+    \item Paper reading
+\end{itemize}
 \item Yu, Kunyi
-    \begin{itemize}
-        \item Paper reading
-        \item Assignment 3/5 report, final report
-        \item Code decomposition, experiments implementation
-    \end{itemize}
+\begin{itemize}
+    \item Paper reading
+    \item Assignment 3/5 report, final report
+    \item Code decomposition, experiments implementation
+\end{itemize}
 \item Ibrahim, Mona
-    \begin{itemize}
-        \item Paper reading
-        \item First/second version code
-    \end{itemize}
+\begin{itemize}
+    \item Paper reading
+    \item First/second version code
+\end{itemize}
 \end {itemize}
 
 \begin{thebibliography}{10}
