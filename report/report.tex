@@ -141,6 +141,51 @@ Instruction to run the code:
     $ # dataset_size: 2, 4, 6, 8, 10 (default 4)
 \end{lstlisting}
 
+\section{Kelvin's Unfinished Implementation for TKQN Queries using POWER Algorithm}
+
+\subsection{Dataset Preparation}
+The dataset comprises spatial objects defined by their coordinates  and associated keywords. Data preprocessing utilized Python's Pandas library for structured handling:
+
+\begin{verbatim}
+id,x,y,keywords
+1,10,20,restaurant cafe
+2,15,25,cafe bakery
+3,20,30,restaurant bakery
+\end{verbatim}
+
+\subsection{POWER Algorithm Implementation}
+Due to constraints of the standard \texttt{rtree} Python library, a simplified brute-force method was implemented. This method evaluates keyword conditions and distances between query points and dataset objects directly:
+
+\begin{verbatim}
+def satisfies_keywords(keywords, positive, negative):
+return positive.issubset(keywords) and negative.isdisjoint(keywords)
+
+def distance(p1, p2):
+return ((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)**0.5
+
+def POWER_simple(query_location, positive, negative, k, data_objects):
+results = []
+for obj in data_objects:
+if satisfies_keywords(obj['keywords'], positive, negative):
+dist = distance(query_location, obj['location'])
+heapq.heappush(results, (dist, obj))
+return heapq.nsmallest(k, results)
+\end{verbatim}
+
+\subsection{Batch Query Processing}
+Batch query processing reduces redundant computations by executing multiple queries simultaneously:
+
+\begin{verbatim}
+def batch_POWER_simple(query_set, k, data_objects):
+batch_results = {}
+for qid, query in enumerate(query_set):
+q_loc, positive, negative = query
+results = POWER_simple(q_loc, positive, negative, k, data_objects)
+batch_results[qid] = results
+return batch_results
+\end{verbatim}
+
+
 \section{Experiment Results}
 
 
@@ -172,6 +217,10 @@ The contribution of each team member is as follows:
 \item Chou, Kelvin
 \begin{itemize}
     \item Paper reading
+    \item Attempt implementation of source code
+         \begin{itemize}
+		  \item see ./src/Kelvin's src
+          \end{itemize}
     \item Experiments implementation
     \item README.md
 \end{itemize}
