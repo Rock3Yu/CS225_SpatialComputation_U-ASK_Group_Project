@@ -13,4 +13,5 @@ Y_MIN, Y_MAX = -90, 90
 
 
 def exp_c(path, query_num):
+    print("Please do not run exp-c")
     raise NotImplementedError

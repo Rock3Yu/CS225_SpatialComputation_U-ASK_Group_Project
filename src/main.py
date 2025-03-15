@@ -28,10 +28,10 @@ def main(args):
     # Number of negative phrases |q.neg|
     elif exp == "b":
         line_POWER, line_POWER_batch, x_labels, x_name = exp_b(path, NUM_QUERY)
-    # todo Length of negative phrases q.negLen
+    # Length of negative phrases q.negLen
     elif exp == "c":
         line_POWER, line_POWER_batch, x_labels, x_name = exp_c(path, NUM_QUERY)
-    # todo The effect of weighting factor
+    # The effect of weighting factor
     elif exp == "d":
         line_POWER, line_POWER_batch, x_labels, x_name = exp_d(path, NUM_QUERY)
     # The effect of k

@@ -1,5 +1,9 @@
 \documentclass[]{IEEEphot}
 
+% Fix for undefined bold font shape
+\usepackage{lmodern}
+\renewcommand{\bfdefault}{bx}
+
 \jvol{1}
 \jnum{1}
 \jmonth{March}
@@ -14,10 +18,12 @@
 
 \title{Final Project Report}
 
-\author{Team\#11:\\
+\author{
+    Team\#11 (Option 3):\\
     Chou, Kelvin, 862466579\\
     Yu, Kunyi, 862548836\\
-    Ibrahim, Mona, 862267986}
+    Ibrahim, Mona, 862267986
+}
 
 \maketitle
 
@@ -114,8 +120,8 @@ In our code replication process, we choose Python as programming language and ma
     ├── exps
     │   ├── exp_a.py
     │   ├── exp_b.py
-    │   ├── exp_c.py
-    │   ├── exp_d.py  // deprecated, no lambda for the POWER algorithm
+    │   ├── exp_c.py  // deprecated, not applicable for POWER_batch
+    │   ├── exp_d.py  // deprecated, no lambda for POWER/POWER_batch
     │   ├── exp_e.py
     │   └── exp_f.py
     ├── invertedIndex.py
@@ -141,9 +147,142 @@ Instruction to run the code:
     $ # dataset_size: 2, 4, 6, 8, 10 (default 4)
 \end{lstlisting}
 
-\section{Kelvin's Unfinished Implementation for TKQN Queries using POWER Algorithm}
+For the data input, we use the class provided one and rename it as $./data$ directory. The data files are not included in the submission code due to the size limitation.
 
-\subsection{Dataset Preparation}
+\newpage
+
+\section{Experiment Results}
+
+The parameters settings for the experiments are remained the same as the paper. You may find those parameters in the $./src/exps/$ directory and $./src/main.py$ which are well commented. The following table shows the details which is copied from the paper\cite{ref1-original-paper}, default settings use \textbf{bold} font format:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pics/exp_settings.png}
+\end{figure}
+
+Note that all experiments use 50 queries from the dataset.
+
+In the paper, there are 6 experiments (a/b/c/d/e/f) conducted related to TKQN query evaluation. Among them, we have successfully replicated the experiments a, b, c, e, and f. Because the weighting factor $\lambda$ is not presented in the POWER algorithm, experiment d is deprecated. The following parts will show the results of these experiments separately.
+
+\subsection{Experiment a}
+
+The purpose of experiment a is to evaluate the effect of changing the number of positive words to the performance of query latency (runtime).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{../exp_plots/a_4m_50queries_20250314-212142.png}
+    \includegraphics[width=0.4\textwidth]{./pics/paper-exp-a.png}
+    \caption{Comparison of experiment a, left: our result, right: paper result}
+\end{figure}
+
+The left figure (our result) shows that the runtime of the POWER and POWER\_batch algorithms barely changes (around 11ms) with different numbers of positive words. The result is similar to the right figure (paper result) where the query latency is stable at 5ms. The reason for the difference in the runtime maybe due to the different hardwares and implementation languages.
+
+\subsection{Experiment b}
+
+The purpose of experiment b is to evaluate the effect of changing the number of negative phrases to the performance of query latency (runtime).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{../exp_plots/b_4m_50queries_20250314-212603.png}
+    \includegraphics[width=0.4\textwidth]{./pics/paper-exp-b.png}
+    \caption{Comparison of experiment b, left: our result, right: paper result}
+\end{figure}
+
+The left figure (our result) yields a great result that the runtime of both POWER and POWER\_batch algorithms stay stable at around 33ms with different numbers of negative phrases. The batch version has a slightly higher runtime than the single version, may be due to the overhead of gathering queries. The right figure (paper result) shows that the runtime is stable at 5ms for all negative phrase numbers. The runtime difference may be due to the different hardwares and implementation languages.
+
+\subsection{Experiment c - Deprecated}
+
+The purpose of experiment c is to evaluate the effect of length of negative phrases to the performance of query latency (runtime). But the experiment c is not applicable for the POWER\_batch algorithm.
+
+\subsection{Experiment d - Deprecated}
+
+The experiment d is deprecated because the weighting factor $\lambda$ is not presented in the POWER algorithm.
+
+\subsection{Experiment e}
+
+The purpose of experiment e is to evaluate the effect of changing the parameter $k$ (in kNN) to the performance of query latency (runtime).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{../exp_plots/e_4m_50queries_20250314-214212.png}
+    \includegraphics[width=0.4\textwidth]{./pics/paper-exp-e.png}
+    \caption{Comparison of experiment e, left: our result, right: paper result}
+\end{figure}
+
+The left figure (our result) shows that the runtime of the POWER and POWER\_batch algorithms remains stable at around 23ms with different values of $k$. At the same time the right figure (paper result) shows that the runtime is in a exponential growth trend with the increase of $k$. May be the reason for the difference is our implementation uses a small dataset size (4m) which only demonstrates the left part of the exponential growth.
+
+\subsection{Experiment f}
+
+The purpose of experiment f is to evaluate the effect of changing the dataset size to the performance of query latency (runtime).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{../exp_plots/f_2-10m_50queries_20250314-222147.png}
+    \includegraphics[width=0.4\textwidth]{./pics/paper-exp-f.png}
+    \caption{Comparison of experiment f, left: our result, right: paper result}
+\end{figure}
+
+Comparing the left figure (our result) and the right figure (paper result), we can see that our version runtime is increasing exponentially with the dataset size while the paper version runtime is increasing linearly. We still need furthur investigation to find out the reason for this difference.
+
+\section{Conclusion}
+
+In this project, we have successfully replicated the experiments a, b, e, and f of the paper. The results of the experiments are similar to the paper results, but there are some differences in the runtime of the experiments. The differences may be due to the different hardwares and implementation languages, or a little bit implementation difference.
+
+In this project, Mona and Kunyi have a tight cooperation from the understanding of the paper's content to the implementation and experiments. Kelvin also contributed to the paper reading and did his best to attempts the POWER\_batch algorithm. The project is a good opportunity for us to learn the spatial computing knowledge and improve our programming skills. We hope to have more opportunities to learn and practice in the future.
+
+\newpage
+
+\section*{Acknowledgements}
+The authors wish to thank Professor Amr Magdy, Dr. Yongyi Liu, TA Alhassan Satii Alshareedah, and others who have helped us in this course for their valuable suggestions and patient guidance. Wish them all the best in their future work and life!
+
+The contribution of each team member is as follows:
+
+\begin{itemize}
+\item Chou, Kelvin
+\begin{itemize}
+    \item Paper reading
+    \item final report (appendix part)
+    \item README.md
+    \item Attempts of power\_batch.py (in ./Kelvin's src)
+\end{itemize}
+
+\item Yu, Kunyi
+\begin{itemize}
+    \item Paper reading
+    \item Write the assignment3/5, final report
+    \item Code decomposition
+    \item Experiments implementation of a/b/e/f (provide 4 images of section 3)
+\end{itemize}
+
+\item Ibrahim, Mona
+\begin{itemize}
+    \item Paper reading
+    \item Implemented the whole source code
+          \begin{itemize}
+              \item point.py
+              \item quadTreeNode.py
+              \item invertedIndex.py
+              \item power.py
+              \item power\_batch.py
+              \item read\_data.py
+              \item structured the queries
+          \end{itemize}
+    \item Experiments implementation of a/b/c (provide queries)
+\end{itemize}
+\end {itemize}
+
+\begin{thebibliography}{10}
+    \bibitem{ref1-original-paper} Liu, Yongyi, and Amr Magdy. "U-ASK: a unified architecture for kNN spatial-keyword queries supporting negative keyword predicates." Proceedings of the 30th International Conference on Advances in Geographic Information Systems. 2022.
+    % \bibitem{ref2} 2
+\end{thebibliography}
+
+\section*{Appendix}
+
+The following part is Kelvin's demonstration of his unfinished implementation for TKQN queries using the POWER algorithm:
+
+\subsection*{Kelvin's Unfinished Implementation for TKQN Queries using POWER Algorithm}
+
+\subsubsection*{Dataset Preparation}
 The dataset comprises spatial objects defined by their coordinates  and associated keywords. Data preprocessing utilized Python's Pandas library for structured handling:
 
 \begin{verbatim}
@@ -153,7 +292,7 @@ id,x,y,keywords
 3,20,30,restaurant bakery
 \end{verbatim}
 
-\subsection{POWER Algorithm Implementation}
+\subsubsection*{POWER Algorithm Implementation}
 Due to constraints of the standard \texttt{rtree} Python library, a simplified brute-force method was implemented. This method evaluates keyword conditions and distances between query points and dataset objects directly:
 
 \begin{verbatim}
@@ -172,7 +311,7 @@ heapq.heappush(results, (dist, obj))
 return heapq.nsmallest(k, results)
 \end{verbatim}
 
-\subsection{Batch Query Processing}
+\subsubsection*{Batch Query Processing}
 Batch query processing reduces redundant computations by executing multiple queries simultaneously:
 
 \begin{verbatim}
@@ -184,72 +323,6 @@ results = POWER_simple(q_loc, positive, negative, k, data_objects)
 batch_results[qid] = results
 return batch_results
 \end{verbatim}
-
-
-\section{Experiment Results}
-
-
-
-
-
-
-
-
-
-\section{Conclusion}
-
-
-
-
-
-
-
-
-
-\newpage
-
-\section*{Acknowledgements}
-The authors wish to thank Professor Amr Magdy, Dr. Yongyi Liu, TA Alhassan Satii Alshareedah, and others who have helped us in this course for their valuable suggestions and patient guidance. Wish them all the best in their future work and life!
-
-The contribution of each team member is as follows:
-
-\begin{itemize}
-\item Chou, Kelvin
-\begin{itemize}
-    \item Paper reading
-    \item Attempt implementation of source code
-         \begin{itemize}
-		  \item see ./src/Kelvin's src
-          \end{itemize}
-    \item Experiments implementation
-    \item README.md
-\end{itemize}
-\item Yu, Kunyi
-\begin{itemize}
-    \item Paper reading
-    \item Assignment 3/5 report, final report
-    \item Code decomposition, experiments implementation
-\end{itemize}
-\item Ibrahim, Mona
-\begin{itemize}
-    \item Paper reading
-    \item Implemented the whole source code
-    	\begin{itemize}
-		  \item point.py 
-		  \item quadTreeNode.py
-		  \item invertedIndex.py
-		  \item power.py
-		  \item power_batch.py
-		  \item read_data.py
-		  \item structured the queries
-	\END{itemize} 
-\end{itemize}
-\end {itemize}
-
-\begin{thebibliography}{10}
-    \bibitem{ref1-original-paper} Liu, Yongyi, and Amr Magdy. "U-ASK: a unified architecture for kNN spatial-keyword queries supporting negative keyword predicates." Proceedings of the 30th International Conference on Advances in Geographic Information Systems. 2022.
-    % \bibitem{ref2} 2
-\end{thebibliography}
 
 
 \end{document}

@@ -1,11 +1,13 @@
 from read_data import parse_files
 from point import Point
 import random
+import json
 
 
 class Query:
     def __init__(self, num_query, path='../data/data_10'):
         self.num_query = num_query
+        self.queries = []
         raw_data_points = parse_files(path)
         self.points = []
         self.positions = []
@@ -17,6 +19,13 @@ class Query:
             self.keywords.extend(point.keywords)
         random.seed(42)
         random.shuffle(self.points)
+
+        for p in self.points:
+            # random 1-5 neg keys, list
+            neg_keys = random.sample(self.keywords, random.randint(1, 5))
+            q = (p.get_position(), p.get_keywords(), neg_keys)
+            self.queries.append(q)
+        random.shuffle(self.queries)
 
     def get_queries_milestone2_version(self):
         queries = [
@@ -85,11 +94,18 @@ class Query:
         return queries
 
     def get_queries_by_num_keys(self, num_pos=1, num_neg=1):
-        queries = []
-        for i in range(self.num_query):
-            position_tmp = random.choice(self.positions)
-            pos_keys_tmp = random.sample(self.keywords, num_pos)
-            neg_keys_tmp = random.sample(self.keywords, num_neg)
-            q_tmp = (position_tmp, pos_keys_tmp, neg_keys_tmp)
-            queries.append(q_tmp)
-        return queries
+        if False:  # use queries2.json
+            queries = self.get_queries_by_num_keys_queries2(num_pos, num_neg)
+        else:
+            queries = [q for q in self.queries if len(q[1]) == num_pos and len(q[2]) == num_neg]
+        return queries[:self.num_query]
+
+    def _get_queries_by_num_keys_queries2(self, num_pos=3, num_neg=1):
+        path = '../queries2.json'
+        with open(path, "r") as f:
+            queries = json.load(f)
+        for q in queries:
+            q[0] = tuple(q[0])
+        # filt by num_pos and num_neg
+        queries = [q for q in queries if len(q[1]) == num_pos and len(q[2]) == num_neg]
+        return queries[:self.num_query]
